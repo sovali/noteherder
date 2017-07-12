@@ -3,7 +3,7 @@ import React from 'react'
 import './NoteList.css'
 import Note from './Note'
 
-const NoteList = ({ notess}) => {
+const NoteList = ({ notes }) => {
   const noteIds = Object.keys(notes)
 
   return (

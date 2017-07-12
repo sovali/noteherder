@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import base, { auth } from './base'
-import {Route,Switch,Redirect} from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
+
 import './App.css'
 import Main from './Main'
 import SignIn from './SignIn'
+import base, { auth } from './base'
 
 class App extends Component {
   constructor() {
@@ -11,8 +12,8 @@ class App extends Component {
 
     this.state = {
       notes: {},
-      currentNoteId: null,
       uid: null,
+      firebaseNotesSynced: false,
     }
   }
 
@@ -43,18 +44,26 @@ class App extends Component {
       {
         context: this,  // what object the state is on
         state: 'notes', // which property to sync
+        then: () => this.setState({ firebaseNotesSynced: true })
       }
     )
   }
 
   saveNote = (note) => {
-    const notes = {...this.state.notes}
+    let shouldRedirect = false
     if (!note.id) {
       note.id = Date.now()
+      shouldRedirect = true
     }
+
+    const notes = {...this.state.notes}
     notes[note.id] = note
 
     this.setState({ notes })
+
+    if (shouldRedirect) {
+      this.props.history.push(`/notes/${note.id}`)
+    }
   }
 
   removeNote = (note) => {
@@ -62,6 +71,7 @@ class App extends Component {
     notes[note.id] = null
 
     this.setState({ notes })
+    this.props.history.push('/notes')
   }
 
   signedIn = () => {
@@ -85,7 +95,6 @@ class App extends Component {
     this.setState({
       uid: null,
       notes: {},
-      currentNoteId: null,
     })
   }
 
@@ -100,14 +109,11 @@ class App extends Component {
       signOut: this.signOut,
     }
 
-    const noteData = {
-      notes: this.state.notes,
-    }
-
     return (
       <Main
         {...actions}
-        {...noteData}
+        notes={this.state.notes}
+        firebaseNotesSynced={this.state.firebaseNotesSynced}
       />
     )
   }
@@ -115,21 +121,25 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Route 
-          path="/sign-in" 
-          component={() => (
-            this.signedIn
-            ? <Redirect to="/notes" />
-            : <SignIn /> 
-          )} />
-        <Route 
-          path="/notes" 
-          render={() => (
-            this.signedIn
-            ? this.renderMain
-            : <Redirect to="/sign-in" />
-          )} />
-        <Route render={() => <Redirect to="/notes" />} />
+        <Switch>
+          <Route
+            path="/sign-in"
+            render={() => (
+              this.signedIn()
+                ? <Redirect to="/notes" />
+                : <SignIn />
+            )}
+          />
+          <Route
+            path="/notes"
+            render={() => (
+              this.signedIn()
+                ? this.renderMain()
+                : <Redirect to="/sign-in" />
+            )}
+          />
+          <Route render={() => <Redirect to="/notes" /> } />
+        </Switch>
       </div>
     );
   }

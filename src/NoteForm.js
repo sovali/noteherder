@@ -13,8 +13,13 @@ class NoteForm extends Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    const nextId = props.match.params.id
-    const note = nextProps.notes[nextId] || this.blankNote()
+    const idFromUrl = nextProps.match.params.id
+    const note = nextProps.notes[idFromUrl] || this.blankNote()
+
+    const noteNotFound = idFromUrl && !note.id
+    if (noteNotFound && nextProps.firebaseNotesSynced) {
+      this.props.history.push('/notes')
+    }
 
     let editorValue = this.state.editorValue
     if (editorValue.toString('html') !== note.body) {
@@ -29,6 +34,7 @@ class NoteForm extends Component {
       id: null,
       title: '',
       body: '',
+      updatedAt:`${Date().slice(0,24)}`,
     }
   }
 
