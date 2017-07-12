@@ -4,7 +4,7 @@ import './SignIn.css'
 import quill from './quill.svg'
 import githubLogo from './github.png'
 import googleLogo from './google.svg'
-import { auth, googleProvider, githubProvider } from './base'
+import { auth, googleProvider, twitterProvider, githubProvider } from './base'
 
 const SignIn = () => {
   const authenticate = (provider) => {
@@ -38,6 +38,7 @@ const SignIn = () => {
           <img src={githubLogo} alt="" />
           Sign in with Github
           </button>
+
       </main>
     </div>
   )
