@@ -128,8 +128,20 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Route path="/sign-in" component={SignIn} />
-        <Route path="/notes" render={() => this.renderMain()} />
+        <Route 
+          path="/sign-in" 
+          component={() => (
+            this.signedIn
+            ? <Redirect to="/notes" />
+            : <SignIn /> 
+          )} />
+        <Route 
+          path="/notes" 
+          render={() => (
+            this.signedIn
+            ? this.renderMain
+            : <Redirect to="/sign-in" />
+          )} />
         <Route render={() => <Redirect to="/notes" />} />
       </div>
     );
