@@ -8,19 +8,16 @@ import NoteForm from './NoteForm'
 const Main = (props) => {
   const formProps = {
             notes: props.notes,
-            currentNoteId: props.currentNoteId,
             saveNote: props.saveNote,
             removeNote: props.removeNote
   }
   return (
     <div className="Main">
       <Sidebar
-        resetCurrentNote={props.resetCurrentNote}
         signOut={props.signOut}
       />
       <NoteList
         notes={props.notes}
-        setCurrentNoteId={props.setCurrentNoteId}
       />
 
       <Switch>
